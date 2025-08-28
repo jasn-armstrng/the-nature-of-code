@@ -16,10 +16,10 @@ Raylib.SetTargetFPS(60);
 
 // Instantiate a new randon object. Which we will use to generate a random integer between n and m (inclusive of n, exclusive of m)
 // that will be applied to the x and y of our walker's step vector.
-Random stagger = new Random();
+Random stagger = new(); // Previously new Random(). Now using target-typed new expressions to simplify object creation when the type can be inferred from the context. C# 9.0+ 
 
 // Instantiate a new walker - Our drunk
-Walker drunk = new Walker(
+Walker drunk = new(
     name: "Johnny",
     initialPosition: (screenWidth / 2, screenHeight / 2),
     colour: (Color.White, "White"),
