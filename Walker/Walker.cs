@@ -1,52 +1,57 @@
+// This Class is the first in the quest to complete the above book in C#. Inspired by Wenzy.
 using Raylib_cs;
 
-// Define the Walker class.
-// TODO:
-// - 1. Write a class description. [Keyword there is description, lean into the meaning of the word].
-//      Write the same description in Balkan. 
-// - 2. Move to a Walker.cs file. It makes sense to have one class per file because it's easy to do side by side comparisons of the contents.
-// - 3. Document methods
-public class Walker
+/// <summary>
+/// Step-wise paints pixels within a bounded 2D area using customizable movement vectors.
+/// </summary>
+/// <param name="name">The unique identifier or display name for this Walker.</param>
+/// <param name="initialPosition">The starting coordinates (x, y) where the Walker begins.</param>
+/// <param name="color">The visual appearance of the Walker, containing both the color value and a human-readable alias.</param>
+/// <param name="bounds">The movement boundaries defined as (minX, minY, maxX, maxY) coordinates that constrain the Walker's position.</param>
+/// <remarks>
+/// Based on the Walker class from Daniel Shiffman's "Nature of Code", Chapter 0 - Randomness.
+/// Unlike the original implementation, randomness is provided externally rather than being inherent to the walker.
+/// Provides methods for painting, custom step vectors, and debugging functionality.
+/// </remarks>
+public class Walker(string name, (int x, int y) initialPosition, (Color value, string alias) color, (int minX, int minY, int maxX, int maxY) bounds)
 {
     // Properties
-    public string Name { get; set; } // For identification in the program
-    public (int x, int y) Position { get; set; }
-    public (Color value, string alias) Colour { get; set; } // Also for identification
-    public (int minX, int minY, int maxX, int maxY) Bounds { get; set; } // The walkable area  
+    public string Name { get; set; } = name;
+    public (int x, int y) Position { get; set; } = initialPosition;
+    public (Color value, string alias) Colour { get; set; } = color;
+    public (int minX, int minY, int maxX, int maxY) Bounds { get; set; } = bounds;
 
-    // Constructor to initialize the object
-    public Walker(string name, (int x, int y) initialPosition, (Color value, string alias) colour, (int minX, int minY, int maxX, int maxY) bounds)
+    /// <summary>
+    /// Method <c>Debug</c> Print status information about the Walker to stdout. 
+    /// </summary>
+    public void Debug()
     {
-        Name = name;
-        Position = initialPosition;
-        Colour = colour;
-        Bounds = bounds;
+        Console.WriteLine($"Walker: {Name}: position: ({Position.x}, {Position.y}),  colour: {Colour.alias}");
     }
 
-    // Debug info for now
-    public void StartWalker()
-    {
-        Console.WriteLine($"{Name} has started at position {Position.x},{Position.y}, wearing {Colour.alias}.");
-    }
-
+    /// <summary>
+    /// Method <c>Step</c> calculates and updates the Walker's position based on a vector. 
+    /// </summary>
     public void Step(int xStep, int yStep)
     {
-        // Calculate its new position 
-        (int x, int y) newPosition = (Position.x + xStep, Position.y + yStep);
+        // Calculate the Walker's next position. 
+        (int x, int y) nextPosition = (Position.x + xStep, Position.y + yStep);
 
-        // Keep the walker between the walking area bounds
-        if (newPosition.x < Bounds.minX) { newPosition.x = Bounds.minX; }
-        if (newPosition.x > Bounds.maxX) { newPosition.x = Bounds.maxX - 1; }
+        // Constrain the Walker between the walking area bounds
+        if (nextPosition.x < Bounds.minX) { nextPosition.x = Bounds.minX; }
+        if (nextPosition.x > Bounds.maxX) { nextPosition.x = Bounds.maxX - 1; }
 
-        if (newPosition.y < Bounds.minY) { newPosition.y = Bounds.minY; }
-        if (newPosition.y > Bounds.maxY) { newPosition.y = Bounds.maxY - 1; }
+        if (nextPosition.y < Bounds.minY) { nextPosition.y = Bounds.minY; }
+        if (nextPosition.y > Bounds.maxY) { nextPosition.y = Bounds.maxY - 1; }
 
-        // Update its position
-        Position = newPosition;
+        // Update the Walker's next position. Done this way because we can't modify the tuple Positions elements. Below we assign Position a new tuple.
+        Position = nextPosition;
     }
 
-    // Draw the walker to the screen
-    public void Show()
+    /// <summary>
+    /// Method <c>Paint</c> renders the Walker's position.
+    /// </summary>
+    public void Paint()
     {
         Raylib.DrawPixel(Position.x, Position.y, Colour.value);
     }

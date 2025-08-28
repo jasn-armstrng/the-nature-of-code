@@ -1,6 +1,4 @@
-﻿// Recreating the walker class from Daniel Shiffman's "Nature of Code", chapter 0 - randomness
-// The difference here is that randomness is given to the walker not inherent.
-// This program is the first in the quest to complete the above book in C#. Inspired by Wenzy.
+﻿
 
 // Think about how this can be part of a game development pipeline/backend.
 // What is good API design here. 
@@ -22,13 +20,13 @@ Random stagger = new(); // Previously new Random(). Now using target-typed new e
 Walker drunk = new(
     name: "Johnny",
     initialPosition: (screenWidth / 2, screenHeight / 2),
-    colour: (Color.White, "White"),
+    color: (Color.White, "White"),
     bounds: (0, 0, screenWidth, screenHeight-30) // This gives us screenWidth * screenHeight unique positions to step. Here 800 * 450 = 360,000 unique steps.
                                                  // I did `screenHeight-30` after the fact to exclude the text area at the bottom, which will span the width of the window. 
     );
 
 // Announce our walker to the stage
-drunk.StartWalker();
+drunk.Debug();
 
 // Draw the background here
 Raylib.ClearBackground(Color.Black);
@@ -52,7 +50,7 @@ while (!Raylib.WindowShouldClose()) // Becomes false when the window is closed b
         //  - 4. How do we managing more walkers and their steps? 
 
         // Start by drawing our walker at starting point defined at initialisation
-        drunk.Show();
+        drunk.Paint();
 
         // On screen information
         Raylib.DrawText("Drunkard's walk", 10, 425, 20, Color.Green); 
