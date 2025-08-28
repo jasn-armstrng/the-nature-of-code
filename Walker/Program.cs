@@ -1,0 +1,126 @@
+﻿// Recreating the walker class from Daniel Shiffman's "Nature of Code", chapter 0 - randomness
+// The difference here is that randomness is given to the walker not inherent.
+// This program is the first in the quest to complete the above book in C#. Inspired by Wenzy.
+
+// Think about how this can be part of a game development pipeline/backend.
+// What is good API design here. 
+
+using Raylib_cs;
+using System;
+
+// Initialization
+const int screenWidth = 800;
+const int screenHeight = 450;
+
+Raylib.InitWindow(screenWidth, screenHeight, "Walker");
+Raylib.SetTargetFPS(60);
+
+// Instantiate a new randon object. Which we will use to generate a random integer between n and m (inclusive of n, exclusive of m)
+// that will be applied to the x and y of our walker's step vector.
+Random stagger = new Random();
+
+// Instantiate a new walker - Our drunk
+Walker drunk = new Walker(
+    name: "Johnny",
+    initialPosition: (screenWidth / 2, screenHeight / 2),
+    colour: (Color.White, "White"),
+    bounds: (0, 0, screenWidth, screenHeight-30) // This gives us screenWidth * screenHeight unique positions to step. Here 800 * 450 = 360,000 unique steps.
+                                                 // I did `screenHeight-30` after the fact to exclude the text area at the bottom, which will span the width of the window. 
+    );
+
+// Announce our walker to the stage
+drunk.StartWalker();
+
+// Draw the background here
+Raylib.ClearBackground(Color.Black);
+
+// Main game loop
+while (!Raylib.WindowShouldClose()) // Becomes false when the window is closed by user action
+{
+    // Question: What should stay out here?
+
+    // Question: What is does it mean to draw stuff on the screen? 
+    Raylib.BeginDrawing();
+    {
+        // What can be drawn in here?
+
+        // Don't redraw background because we want to see steps. 
+        // We need to consider memory usage here. Each step drawn is data kept in memory.
+        // Questions: 
+        //  - 1. How much steps should we be storing for good performance and artistic aesthetic?
+        //  - 2. What data structure should be use to store the steps? I'm thinking something that does FIFO; getting rid of older steps first.
+        //  - 3. How much memory is needed to store a coloured pixel at a position?
+        //  - 4. How do we managing more walkers and their steps? 
+
+        // Start by drawing our walker at starting point defined at initialisation
+        drunk.Show();
+
+        // On screen information
+        Raylib.DrawText("Drunkard's walk", 10, 425, 20, Color.Green); 
+    }
+    Raylib.EndDrawing();
+
+    // Next step is random.
+    // If we have more drunks and we want a unique random x, y for each, is using the pattern below the best approach?
+    drunk.Step(stagger.Next(-5, 6), stagger.Next(-5, 6));
+}
+
+// De-initialization
+Raylib.CloseWindow();
+
+// Define the Walker class.
+// TODO:
+// - 1. Write a class description. [Keyword there is description, lean into the meaning of the word].
+//      Write the same description in Balkan. 
+// - 2. Move to a Walker.cs file. It makes sense to have one class per file because it's easy to do side by side comparisons of the contents.
+// - 3. Document methods
+public class Walker
+{
+    // Properties
+    public string Name { get; set; } // For identification in the program
+    public (int x, int y) Position { get; set; }
+    public (Color value, string alias) Colour { get; set; } // Also for identification
+    public (int minX, int minY, int maxX, int maxY) Bounds { get; set; } // The walkable area  
+
+    // Constructor to initialize the object
+    public Walker(string name, (int x, int y) initialPosition, (Color value, string alias) colour, (int minX, int minY, int maxX, int maxY) bounds)
+    {
+        Name = name;
+        Position = initialPosition;
+        Colour = colour;
+        Bounds = bounds;
+    }
+
+    // Debug info for now
+    public void StartWalker()
+    {
+        Console.WriteLine($"{Name} has started at position {Position.x},{Position.y}, wearing {Colour.alias}.");
+    }
+
+    public void Step(int xStep, int yStep)
+    {
+        // Calculate its new position 
+        (int x, int y) newPosition = (Position.x + xStep, Position.y + yStep);
+
+        // Keep the walker between the walking area bounds
+        if (newPosition.x < Bounds.minX) { newPosition.x = Bounds.minX; }
+        if (newPosition.x > Bounds.maxX) { newPosition.x = Bounds.maxX - 1; }
+
+        if (newPosition.y < Bounds.minY) { newPosition.y = Bounds.minY; }
+        if (newPosition.y > Bounds.maxY) { newPosition.y = Bounds.maxY - 1; }
+
+        // Update its position
+        Position = newPosition;
+    }
+
+    // Draw the walker to the screen
+    public void Show()
+    {
+        Raylib.DrawPixel(Position.x, Position.y, Colour.value);
+    }
+}
+
+
+
+
+
