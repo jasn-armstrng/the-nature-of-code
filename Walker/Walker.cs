@@ -11,7 +11,7 @@ using Raylib_cs;
 /// <remarks>
 /// Based on the Walker class from Daniel Shiffman's "Nature of Code", Chapter 0 - Randomness.
 /// Unlike the original implementation, randomness is provided externally rather than being inherent to the walker.
-/// Provides methods for painting, custom step vectors, and debugging functionality.
+/// Provides methods for customizing next step, stepping, and debugging functionality.
 /// </remarks>
 public class Walker(string name, (int x, int y) initialPosition, (Color value, string alias) color, (int minX, int minY, int maxX, int maxY) bounds)
 {
@@ -30,9 +30,9 @@ public class Walker(string name, (int x, int y) initialPosition, (Color value, s
     }
 
     /// <summary>
-    /// Method <c>Step</c> calculates and updates the Walker's position based on a vector. 
+    /// Method <c>NextStep</c> calculates and updates the Walker's position based on a vector. 
     /// </summary>
-    public void Step(int xStep, int yStep)
+    public void NextStep(int xStep, int yStep)
     {
         // Calculate the Walker's next position. 
         (int x, int y) nextPosition = (Position.x + xStep, Position.y + yStep);
@@ -49,9 +49,9 @@ public class Walker(string name, (int x, int y) initialPosition, (Color value, s
     }
 
     /// <summary>
-    /// Method <c>Paint</c> renders the Walker's position.
+    /// Method <c>Step</c> renders the Walker's position.
     /// </summary>
-    public void Paint()
+    public void Step()
     {
         Raylib.DrawPixel(Position.x, Position.y, Colour.value);
     }
